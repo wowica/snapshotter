@@ -1,5 +1,7 @@
 # Stake Pool Snapshotter
 
+![CI Status](https://github.com/wowica/snapshotter/actions/workflows/ci.yml/badge.svg)
+
 This CLI program takes a snapshot of a Cardano Stake Pool. Given a Stake Pool ID, it generates a list of Public Key Hashes currently delegated to the pool.
 
 ## Usage
