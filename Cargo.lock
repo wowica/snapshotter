@@ -986,6 +986,7 @@ version = "0.1.0"
 dependencies = [
  "blockfrost",
  "clap",
+ "hex",
  "pallas-addresses",
  "tokio",
 ]
