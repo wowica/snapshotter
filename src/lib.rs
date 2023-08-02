@@ -48,11 +48,9 @@ fn test_derive_pkh_from_address() -> Result<(), Box<dyn std::error::Error>> {
     let expected_pkh = "6bd95fcacb2373d68ae094fdefcc4811358e11ca0306a9f4b3bcbbe8";
     let addr = String::from("addr_test1qp4ajh72ev3h8452uz20mm7vfqgntrs3egpsd205kw7th6rxfxdzuq2mdvp20qlschy27z54q6nysujuj50c6n3we0rqv9tgql");
 
-    if let Some(actual_pkh) = derive_pkh_from_address(&addr) {
-        assert_eq!(expected_pkh, actual_pkh);
-    } else {
-        assert!(false)
-    }
+    let actual_pkh = derive_pkh_from_address(&addr).unwrap();
+
+    assert_eq!(expected_pkh, actual_pkh);
 
     Ok(())
 }
