@@ -31,16 +31,30 @@ async fn fetch_payment_addresses(stake_address: &str) -> blockfrost::Result<Vec<
     Ok(payment_addresses)
 }
 
-pub fn derive_pkh_from_address(address: Address) -> Option<String> {
-    match address {
-        Address::Shelley(shelley_address) => {
-            let hash = shelley_address.payment().as_hash().to_vec();
-            let s_hash: Vec<_> = hash.iter().map(|b| format!("{:02x}", b)).collect();
-            let ss_hash = s_hash.join("");
-            Some(ss_hash)
-        }
-        _ => None,
+pub fn derive_pkh_from_address(addr: &str) -> Option<String> {
+    Address::from_bech32(addr)
+        .ok()
+        .and_then(|address| match address {
+            Address::Shelley(shelley_address) => {
+                let hash = shelley_address.payment().as_hash();
+                Some(hex::encode(hash))
+            }
+            _ => None,
+        })
+}
+
+#[test]
+fn test_derive_pkh_from_address() -> Result<(), Box<dyn std::error::Error>> {
+    let expected_pkh = "6bd95fcacb2373d68ae094fdefcc4811358e11ca0306a9f4b3bcbbe8";
+    let addr = String::from("addr_test1qp4ajh72ev3h8452uz20mm7vfqgntrs3egpsd205kw7th6rxfxdzuq2mdvp20qlschy27z54q6nysujuj50c6n3we0rqv9tgql");
+
+    if let Some(actual_pkh) = derive_pkh_from_address(&addr) {
+        assert_eq!(expected_pkh, actual_pkh);
+    } else {
+        assert!(false)
     }
+
+    Ok(())
 }
 
 pub async fn fetch_pkhs(pool_id: &str) -> Option<Vec<String>> {
@@ -52,7 +66,7 @@ pub async fn fetch_pkhs(pool_id: &str) -> Option<Vec<String>> {
         let addresses = fetch_payment_addresses(delegator).await.expect("Error");
         for address in addresses {
             //println!("\tPayment Address: {}", address);
-            let pkh = derive_pkh_from_address(Address::from_bech32(&address).unwrap()).unwrap();
+            let pkh = derive_pkh_from_address(&address).unwrap();
             //println!("{}", pkh);
             pkhs.push(pkh);
         }
