@@ -37,7 +37,13 @@ pub fn derive_pkh_from_address(addr: &str) -> Option<String> {
         .and_then(|address| match address {
             Address::Shelley(shelley_address) => {
                 let hash = shelley_address.payment().as_hash();
-                Some(hex::encode(hash))
+                let hex_encoded_hash = hash
+                    .to_vec()
+                    .iter()
+                    .map(|b| format!("{:02x}", b))
+                    .collect::<Vec<_>>()
+                    .join("");
+                Some(hex_encoded_hash)
             }
             _ => None,
         })
